@@ -1,0 +1,96 @@
+﻿@page "/nuevoAnimal"
+@inject CodeChallenge.Data.ZoologicoServicio _zoologicoServicio
+
+<h3>Nuevo Animal</h3>
+<EditForm Model="@animal" OnValidSubmit="AgregarAnimal">
+    <div class="form-group row justify-content-center">
+        <div class="col-8">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group row justify-content-center">
+                        <div class="col-2">
+                            <label class="col-form-label">Tipo</label>
+                        </div>
+                        <div class="col-4">
+                            <select @bind="animal.Tipo" class="form-control">
+                                <option value="">-- Seleccionar Tipo --</option>
+                                @foreach (var tipo in _tipos)
+                                {
+                                    <option value="@tipo">@tipo</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row justify-content-center">
+                        <div class="col-2">
+                            <label class="col-form-label">Especie</label>
+                        </div>
+                        <div class="col-4">
+                            <input type="text" class="form-control" @bind="animal.Especie" />
+                        </div>
+                    </div>
+                    <div class="form-group row justify-content-center">
+                        <div class="col-2">
+                            <label class="col-form-label">Edad</label>
+                        </div>
+                        <div class="col-4">
+                            <input type="number" class="form-control" @bind="animal.Edad" />
+                        </div>
+                    </div>
+                    <div class="form-group row justify-content-center">
+                        <div class="col-2">
+                            <label class="col-form-label">Lugar de Origen</label>
+                        </div>
+                        <div class="col-4">
+                            <input type="text" class="form-control" @bind="animal.LugarOrigen" />
+                        </div>
+                    </div>
+                    <div class="form-group row justify-content-center">
+                        <div class="col-2">
+                            <label class="col-form-label">Peso</label>
+                        </div>
+                        <div class="col-4">
+                            <input type="number" class="form-control" @bind="animal.Peso" />
+                        </div>
+                    </div>
+                    <div class="form-group row justify-content-center">
+                        <div class="col-2">
+                            <label class="col-form-label">Porcentaje</label>
+                        </div>
+                        <div class="col-4">
+                            <input type="number" class="form-control" @bind="animal.Porcentaje" />
+                        </div>
+                    </div>
+                    <div class="form-group row justify-content-center">
+                        <div class="col-2">
+                            <label class="col-form-label">Kilos</label>
+                        </div>
+                        <div class="col-4">
+                            <input type="number" class="form-control" @bind="animal.Kilos" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-12 d-flex justify-content-center">
+                            <button type="button" class="btn btn-success" @onclick="AgregarAnimal">Agregar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+@code {
+    private List<string> _tipos;
+    protected CodeChallenge.Data.Model.Animal animal = new Data.Model.Animal();
+
+    private void AgregarAnimal()
+    {
+        _zoologicoServicio.AgregarAnimal(animal);
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        _tipos = _zoologicoServicio.TiposAnimales;
+        return base.OnInitializedAsync();
+    }
+}
