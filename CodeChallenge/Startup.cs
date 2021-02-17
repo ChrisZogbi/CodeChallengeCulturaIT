@@ -1,4 +1,6 @@
 using CodeChallenge.Data;
+using CodeChallenge.Services;
+using CodeChallenge.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -22,7 +24,13 @@ namespace CodeChallenge
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<ZoologicoServicio>();
+
+            services
+                .AddSingleton<IZoologicoServicio, ZoologicoServicio>()
+                .AddSingleton<ICarnivoroServicio, CarnivoroServicio>()
+                .AddSingleton<IHerbiboroServicio, HerbiboroServicio>()
+                .AddSingleton<IReptilServicio, ReptilServicio>();
+
             services.AddControllersWithViews()
              .AddRazorRuntimeCompilation();
         }
