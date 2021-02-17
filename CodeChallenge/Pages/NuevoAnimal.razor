@@ -1,77 +1,93 @@
 ﻿@page "/nuevoAnimal"
-@inject CodeChallenge.Data.ZoologicoServicio _zoologicoServicio
+@using CodeChallenge.Services.Model
+@using CodeChallenge.Data
+
+@inject CodeChallenge.Services.Interfaces.IZoologicoServicio _zoologicoServicio
 
 <h3>Nuevo Animal</h3>
-<EditForm Model="@animal" OnValidSubmit="AgregarAnimal">
+<EditForm Model="@animalModel" OnValidSubmit="AgregarAnimal">
     <div class="form-group row justify-content-center">
-        <div class="col-8">
+        <div class="col-10">
             <div class="card">
                 <div class="card-body">
                     <div class="form-group row justify-content-center">
-                        <div class="col-2">
+                        <div class="col-4">
                             <label class="col-form-label">Tipo</label>
                         </div>
                         <div class="col-4">
-                            <select @bind="animal.Tipo" class="form-control">
+                            <select @onchange="CambioTipoSeleccionado" class="form-control">
                                 <option value="">-- Seleccionar Tipo --</option>
-                                @foreach (var tipo in _tipos)
+                                @foreach (var item in Tipos)
                                 {
-                                    <option value="@tipo">@tipo</option>
+                                    <option value="@item.Key">@item.Value</option>
                                 }
                             </select>
                         </div>
                     </div>
                     <div class="form-group row justify-content-center">
-                        <div class="col-2">
+                        <div class="col-4">
                             <label class="col-form-label">Especie</label>
                         </div>
                         <div class="col-4">
-                            <input type="text" class="form-control" @bind="animal.Especie" />
+                            <input type="text" class="form-control" @bind="animalModel.Animal.Especie" />
                         </div>
                     </div>
                     <div class="form-group row justify-content-center">
-                        <div class="col-2">
+                        <div class="col-4">
                             <label class="col-form-label">Edad</label>
                         </div>
                         <div class="col-4">
-                            <input type="number" class="form-control" @bind="animal.Edad" />
+                            <input type="number" class="form-control" @bind="animalModel.Animal.Edad" />
                         </div>
                     </div>
                     <div class="form-group row justify-content-center">
-                        <div class="col-2">
+                        <div class="col-4">
                             <label class="col-form-label">Lugar de Origen</label>
                         </div>
                         <div class="col-4">
-                            <input type="text" class="form-control" @bind="animal.LugarOrigen" />
+                            <input type="text" class="form-control" @bind="animalModel.Animal.LugarOrigen" />
                         </div>
                     </div>
                     <div class="form-group row justify-content-center">
-                        <div class="col-2">
+                        <div class="col-4">
                             <label class="col-form-label">Peso</label>
                         </div>
                         <div class="col-4">
-                            <input type="number" class="form-control" @bind="animal.Peso" />
+                            <input type="number" class="form-control" @bind="animalModel.Animal.Peso" />
                         </div>
                     </div>
                     <div class="form-group row justify-content-center">
-                        <div class="col-2">
+                        <div class="col-4">
                             <label class="col-form-label">Porcentaje</label>
                         </div>
                         <div class="col-4">
-                            <input type="number" class="form-control" @bind="animal.Porcentaje" />
+                            <input type="number" class="form-control" @bind="animalModel.Animal.Porcentaje" />
                         </div>
                     </div>
                     <div class="form-group row justify-content-center">
-                        <div class="col-2">
+                        <div class="col-4">
                             <label class="col-form-label">Kilos</label>
                         </div>
                         <div class="col-4">
-                            <input type="number" class="form-control" @bind="animal.Kilos" />
+                            <input type="number" class="form-control" @bind="animalModel.Animal.Kilos" />
+                        </div>
+                    </div>
+                    <div class="form-group row justify-content-center" hidden="@esReptil">
+                        <div class="col-4">
+                            <label class="col-form-label">Cambio de piel (en dias)</label>
+                        </div>
+                        <div class="col-4">
+                            <input type="number" class="form-control" @bind="animalModel.Animal.CambioPiel" />
                         </div>
                     </div>
                     <div class="form-group row">
                         <div class="col-12 d-flex justify-content-center">
                             <button type="button" class="btn btn-success" @onclick="AgregarAnimal">Agregar</button>
+                        </div>
+                    </div>
+                    <div class="row" hidden="@superoLimite">
+                        <div class="col-12 d-flex justify-content-center">
+                            <span class="text-danger">La proyeccion indica que este mes se superaria el limite de Kg de alimentos (@LimiteAlimentoMensual)</span>
                         </div>
                     </div>
                 </div>
@@ -80,17 +96,37 @@
     </div>
 </EditForm>
 @code {
-    private List<string> _tipos;
-    protected CodeChallenge.Data.Model.Animal animal = new Data.Model.Animal();
+    private Dictionary<int, string> Tipos = new Dictionary<int, string>();
+    protected AnimalModel animalModel = new AnimalModel();
+    protected readonly int LimiteAlimentoMensual = 1500;
 
-    private void AgregarAnimal()
+
+    private bool superoLimite = true;
+    private bool esReptil = true;
+
+    private async Task AgregarAnimal()
     {
-        _zoologicoServicio.AgregarAnimal(animal);
+        await _zoologicoServicio.AgregarAnimal(animalModel);
+
+        superoLimite = !(await _zoologicoServicio.ProyectarConsumoTotalDelCorriente() > LimiteAlimentoMensual);
+
+        animalModel = new AnimalModel();
     }
 
-    protected override Task OnInitializedAsync()
+    private async Task CambioTipoSeleccionado(ChangeEventArgs e)
     {
-        _tipos = _zoologicoServicio.TiposAnimales;
-        return base.OnInitializedAsync();
+        var tipoAnimal = Tipos.Where(x => x.Key == int.Parse(e.Value.ToString())).Select(result => (TipoAnimal)result.Key).FirstOrDefault();
+
+        esReptil = !(tipoAnimal == TipoAnimal.Reptil);
+
+        animalModel.Animal.Tipo = (int)tipoAnimal;
+
+        await Task.CompletedTask;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Tipos = await _zoologicoServicio.ObtenerTipoAnimales();
+        await base.OnInitializedAsync();
     }
 }
