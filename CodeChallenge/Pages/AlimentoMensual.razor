@@ -1,0 +1,45 @@
+﻿@page "/alimentoMensual"
+@using CodeChallenge.Services.Model
+@inject CodeChallenge.Services.Interfaces.IZoologicoServicio _zoologicoServicio
+
+<h3>Alimento Mensual</h3>
+<div class="form-group row justify-content-center">
+    <div class="col-8">
+        <div class="card">
+            <div class="card-body pb-0">
+                <div class="table-responsive">
+                    <div class="dataTables_wrapper no-footer">
+                        <table class="table" id="addresss">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Alimento</th>
+                                    <th class="text-center">Total consumo mensual</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in _consumoMensualPorAlimento)
+                                {
+                                    <tr>
+                                        <td class="text-center"><span>@item.Key</span></td>
+                                        <td class="text-center"><span>@item.Value</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Dictionary<string, string> _consumoMensualPorAlimento = new Dictionary<string, string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _consumoMensualPorAlimento = await _zoologicoServicio.ObtenerConsumoMensualPorTipoAlimento();
+
+        await base.OnInitializedAsync();
+    }
+}

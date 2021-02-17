@@ -1,0 +1,54 @@
+﻿@page "/animales"
+@inject CodeChallenge.Services.Interfaces.IZoologicoServicio _zoologicoServicio
+
+<h3>Animales</h3>
+<div class="form-group row justify-content-center">
+    <div class="col-10">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <div class="dataTables_wrapper no-footer">
+                        <table class="table" id="addresss">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Tipo</th>
+                                    <th class="text-center">Peso</th>
+                                    <th class="text-center">Kilos</th>
+                                    <th class="text-center">Porcentaje</th>
+                                    <th class="text-center">Lugar Origen</th>
+                                    <th class="text-center">Edad</th>
+                                    <th class="text-center">Consumo del mes hasta la fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in _animales)
+                                {
+                                    <tr>
+                                        <td class="text-center"><span>@item.Tipo.ToString()</span></td>
+                                        <td class="text-center"><span>@item.Animal.Peso</span></td>
+                                        <td class="text-center"><span>@item.Animal.Kilos</span></td>
+                                        <td class="text-center"><span>@item.Animal.Porcentaje</span></td>
+                                        <td class="text-center"><span>@item.Animal.LugarOrigen</span></td>
+                                        <td class="text-center"><span>@item.Animal.Edad</span></td>
+                                        <td class="text-center"><span>@item.ConsumoCorriente</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<CodeChallenge.Services.Model.AnimalModel> _animales = new List<CodeChallenge.Services.Model.AnimalModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _animales = await _zoologicoServicio.ObtenerTodos();
+
+        await base.OnInitializedAsync();
+    }
+}
