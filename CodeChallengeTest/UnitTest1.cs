@@ -3,74 +3,161 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using CodeChallenge.Data;
+using CodeChallenge.Services;
 
 namespace CodeChallengeTest
 {
     public class Tests
     {
-        private IZoologicoServicio _zoologicoServicio;
-        private List<Animal> _animales;
+        private ReptilServicio reptilServicio;
+        private CarnivoroServicio carnivoroServicio;
+        private HerbiboroServicio herbiboroServicio;
+        private ZoologicoServicio zoologicoServicio;
+        private AnimalStorage animalStorage;
 
-        public Tests(IZoologicoServicio zoologicoServicio)
+
+        public Tests()
         {
-            _zoologicoServicio = zoologicoServicio;
         }
 
         [SetUp]
         public void Setup()
         {
-            _animales = new List<Animal>();
+            reptilServicio = new ReptilServicio();
+            carnivoroServicio = new CarnivoroServicio();
+            herbiboroServicio = new HerbiboroServicio();
+            animalStorage = new AnimalStorage();
+            zoologicoServicio = new ZoologicoServicio(carnivoroServicio, herbiboroServicio, reptilServicio, animalStorage);
+
         }
 
         [Test]
-        public void CalcularAlimentoSinAnimales()
+        public void CalcularAlimentoCarnivoroDiario()
         {
-            var result = _animales.Sum(a => _zoologicoServicio.CalcularAlimentoPorTipo(a));
-            Assert.AreEqual(result, 0);
+            var carnivoro = new Animal
+            {
+                Peso = 200,
+                Porcentaje = 0.25
+            };
+            var result = carnivoroServicio.CalcularAlimento(carnivoro.Peso, carnivoro.Porcentaje);
+            Assert.AreEqual(result.Result, 50);
         }
 
         [Test]
-        public void CalcularAlimentoSoloCarnivoros()
+        public void CalcularAlimentoCarnivoroXDias()
         {
-            _animales.AddRange(MockFactoryCarnivoros());
-            var result = _animales.Sum(a => _zoologicoServicio.CalcularAlimentoPorTipo(a));
-            Assert.AreEqual(result, 22.5);
+            var carnivoro = new Animal
+            {
+                Peso = 500,
+                Porcentaje = 0.1
+            };
+
+            int cantidadDias = 15;
+
+            var result = carnivoroServicio.CalcularAlimento(carnivoro.Peso, carnivoro.Porcentaje, cantidadDias);
+            Assert.AreEqual(result.Result, 750);
         }
 
         [Test]
-        public void CalcularAlimentoSoloHerviboros()
+        public void CalcularAlimentoCarnivorosMensual()
         {
-            _animales.AddRange(MockFactoryHerivboros());
-            var result = _animales.Sum(a => _zoologicoServicio.CalcularAlimentoPorTipo(a));
-            Assert.AreEqual(result, 185);
+            var result = carnivoroServicio.CalcularAlimentoMensual(MockFactoryCarnivoros());
+            Assert.AreEqual(result.Result, 21840);
         }
 
         [Test]
-        public void CalcularAlimentoTodos()
+        public void CalcularAlimentoHerbiboroDiario()
         {
-            _animales.AddRange(MockFactoryTodos());
-            var result = _animales.Sum(a => _zoologicoServicio.CalcularAlimentoPorTipo(a));
-            Assert.AreEqual(result, 207.5);
+            var herbiboro = new Animal
+            {
+                Peso = 30,
+                Kilos = 10
+            };
+            var result = herbiboroServicio.CalcularAlimento(herbiboro.Peso, herbiboro.Kilos);
+            Assert.AreEqual(result.Result, 70);
+        }
+
+        [Test]
+        public void CalcularAlimentoHerbiboroXDias()
+        {
+            var herbiboro = new Animal
+            {
+                Peso = 1000,
+                Kilos = 400
+            };
+
+            int cantidadDias = 10; //Se puede cambiar el numero. El resultado se debe ajustar
+
+            var result = herbiboroServicio.CalcularAlimento(herbiboro.Peso, herbiboro.Kilos, cantidadDias);
+            Assert.AreEqual(result.Result, 24000);
+        }
+
+        [Test]
+        public void CalcularAlimentoHerbiborosMensual()
+        {
+            var result = herbiboroServicio.CalcularAlimentoMensual(MockFactoryHerivboros());
+            Assert.AreEqual(result.Result, 5180);
+        }
+
+        [Test]
+        public void CalcularAlimentoReptilDiario()
+        {
+            var reptil = MockFactoryReptiles().First();
+
+            var result = reptilServicio.CalcularAlimento(reptil.Peso, reptil.Porcentaje, reptil.CambioPiel);
+            Assert.AreEqual(result.Result, 10);
+        }
+
+        [Test]
+        public void CalcularAlimentoReptilXDias()
+        {
+            var reptil = MockFactoryReptiles().Last();
+
+            int cantidadDias = 18; //Se puede cambiar el numero. El resultado se debe ajustar
+
+            var result = reptilServicio.CalcularAlimento(reptil.Peso, reptil.Porcentaje, reptil.CambioPiel, cantidadDias);
+            Assert.AreEqual(result.Result, 90);
+        }
+
+        [Test]
+        public void CalcularAlimentoReptilMensual()
+        {
+            var result = reptilServicio.CalcularAlimentoMensual(MockFactoryReptiles());
+            Assert.AreEqual(result.Result, 2540);
+        }
+
+        [Test]
+        public void CalcularAlimentoTodosMensual()
+        {
+            //Cargo el storage
+            animalStorage.AgregarAnimales(MockFactoryTodos());
+
+            var result = zoologicoServicio.ProyectarConsumoTotalDelCorriente();
+
+            Assert.AreEqual(result.Result, 5639);
         }
 
         #region Mock Factory
-        private List<Animal> MockFactoryCarnivoros()
+        private List<Animal> MockFactoryReptiles()
         {
             return new List<Animal>() {
                 new Animal{
-                    Tipo = TipoAnimal.Carnivoro,
+                    Tipo = (int)TipoAnimal.Reptil,
                     Peso = 100,
-                    Porcentaje = 0.05
+                    Porcentaje = 0.7,
+                    CambioPiel = 5
                 },
                 new Animal{
-                    Tipo = TipoAnimal.Carnivoro,
-                    Peso = 80,
-                    Porcentaje = 0.1
+                    Tipo = (int)TipoAnimal.Reptil,
+                    Peso = 1400,
+                    Porcentaje = 0.5,
+                    CambioPiel = 9
                 },
                 new Animal{
-                    Tipo = TipoAnimal.Carnivoro,
-                    Peso = 95,
-                    Porcentaje = 0.1
+                    Tipo = (int)TipoAnimal.Reptil,
+                    Peso = 280,
+                    Porcentaje = 0.25,
+                    CambioPiel = 3
                 }
             };
         }
@@ -79,15 +166,33 @@ namespace CodeChallengeTest
         {
             return new List<Animal>() {
                 new Animal{
-                    Tipo = TipoAnimal.Herbiboro,
+                    Tipo = (int)TipoAnimal.Herbiboro,
                     Peso = 30,
                     Kilos = 10
                 },
                 new Animal{
-                    Tipo = TipoAnimal.Herbiboro,
+                    Tipo = (int)TipoAnimal.Herbiboro,
                     Peso = 50,
                     Kilos = 15
                 }
+
+            };
+        }
+
+        private List<Animal> MockFactoryCarnivoros()
+        {
+            return new List<Animal>() {
+                new Animal{
+                    Tipo = (int)TipoAnimal.Carnivoro,
+                    Peso = 100,
+                    Porcentaje = 0.3
+                },
+                new Animal{
+                    Tipo = (int)TipoAnimal.Herbiboro,
+                    Peso = 1500,
+                    Porcentaje = 0.5
+                }
+
             };
         }
 
@@ -95,30 +200,32 @@ namespace CodeChallengeTest
         {
             return new List<Animal>() {
                 new Animal{
-                    Tipo = TipoAnimal.Carnivoro,
+                    Tipo = (int)TipoAnimal.Carnivoro,
                     Peso = 100,
                     Porcentaje = 0.05
-                },
+                },//140
                 new Animal{
-                    Tipo = TipoAnimal.Carnivoro,
+                    Tipo = (int)TipoAnimal.Carnivoro,
                     Peso = 80,
                     Porcentaje = 0.1
-                },
+                },//224
                 new Animal{
-                    Tipo = TipoAnimal.Carnivoro,
-                    Peso = 95,
-                    Porcentaje = 0.1
-                },
-                new Animal{
-                    Tipo = TipoAnimal.Herbiboro,
+                    Tipo = (int)TipoAnimal.Herbiboro,
                     Peso = 30,
                     Kilos = 10
-                },
+                },//1960
                 new Animal{
-                    Tipo = TipoAnimal.Herbiboro,
+                    Tipo = (int)TipoAnimal.Herbiboro,
                     Peso = 50,
                     Kilos = 15
-                }
+                },//3220
+               new Animal
+               {
+                    Tipo = (int)TipoAnimal.Reptil,
+                    Peso = 50,
+                    Porcentaje = 0.7,
+                    CambioPiel = 5
+               } //95
             };
         }
         #endregion

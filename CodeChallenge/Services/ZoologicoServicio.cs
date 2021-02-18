@@ -11,28 +11,28 @@ namespace CodeChallenge.Services
 {
     public class ZoologicoServicio : IZoologicoServicio
     {
-        private List<Animal> _animales;
         private readonly ICarnivoroServicio _carnivoroServicio;
         private readonly IHerbiboroServicio _herbiboroServicio;
         private readonly IReptilServicio _reptilServicio;
+        private AnimalStorage _animalStorage;
 
-        public ZoologicoServicio(ICarnivoroServicio carnivoroServicio, IHerbiboroServicio herbiboroServicio, IReptilServicio reptilServicio)
+        public ZoologicoServicio(ICarnivoroServicio carnivoroServicio, IHerbiboroServicio herbiboroServicio, IReptilServicio reptilServicio, AnimalStorage animalStorage)
         {
-            _animales = new List<Animal>();
             _carnivoroServicio = carnivoroServicio;
             _herbiboroServicio = herbiboroServicio;
             _reptilServicio = reptilServicio;
+            _animalStorage = animalStorage;
         }
         public List<TipoAnimal> TiposAnimales => new List<TipoAnimal>() { TipoAnimal.Carnivoro, TipoAnimal.Herbiboro, TipoAnimal.Reptil };
 
         public async Task AgregarAnimal(AnimalModel animalModel)
         {
-            _animales.Add(animalModel.Animal);
+            await _animalStorage.AgregarAnimal(animalModel.Animal);
 
             await Task.CompletedTask;
         }
 
-        private async Task<double> CalcularAlimentoPorTipo(Animal animal, int dias)
+        public async Task<double> CalcularAlimentoPorTipo(Animal animal, int dias)
         {
             switch ((TipoAnimal)animal.Tipo)
             {
@@ -63,12 +63,16 @@ namespace CodeChallenge.Services
         {
             List<AnimalModel> lAnimalModel = new List<AnimalModel>();
 
-            _animales.ForEach(async (a) => lAnimalModel.Add(
+            List<Animal> animales = await _animalStorage.ObtenerAnimales();
+
+            int diaMes = DateTime.Today.Day;
+
+            animales.ForEach(async (a) => lAnimalModel.Add(
                 new AnimalModel
                 {
                     Tipo = (TipoAnimal)a.Tipo,
                     Animal = a,
-                    ConsumoCorriente = await CalcularConsumoDelCorriente(a)
+                    ConsumoCorriente = await CalcularAlimentoPorTipo(a, diaMes)
                 }));
 
             return await Task.FromResult(lAnimalModel);
@@ -82,27 +86,22 @@ namespace CodeChallenge.Services
 
             int diasMes = DateTime.DaysInMonth(today.Year, today.Month);
 
-            _animales.ForEach(async (a) => consumoTotal += await CalcularAlimentoPorTipo(a, diasMes));
+            List<Animal> animales = await _animalStorage.ObtenerAnimales();
+
+            animales.ForEach(async (a) => consumoTotal += await CalcularAlimentoPorTipo(a, diasMes));
 
             return await Task.FromResult(consumoTotal);
-        }
-
-        private async Task<double> CalcularConsumoDelCorriente(Animal animal)
-        {
-            int diaMes = DateTime.Today.Day;
-
-            double consumoCorriente = await CalcularAlimentoPorTipo(animal, diaMes);
-
-            return await Task.FromResult(consumoCorriente);
         }
 
         public async Task<Dictionary<string, string>> ObtenerConsumoMensualPorTipoAlimento()
         {
             Dictionary<string, string> CantidadPorAlimento = new Dictionary<string, string>();
 
-            var carnivoros = _animales.Where(a => (TipoAnimal)a.Tipo == TipoAnimal.Carnivoro).ToList();
-            var herbiboros = _animales.Where(a => (TipoAnimal)a.Tipo == TipoAnimal.Herbiboro).ToList();
-            var reptiles = _animales.Where(a => (TipoAnimal)a.Tipo == TipoAnimal.Reptil).ToList();
+            List<Animal> animales = await _animalStorage.ObtenerAnimales();
+
+            var carnivoros = animales.Where(a => (TipoAnimal)a.Tipo == TipoAnimal.Carnivoro).ToList();
+            var herbiboros = animales.Where(a => (TipoAnimal)a.Tipo == TipoAnimal.Herbiboro).ToList();
+            var reptiles = animales.Where(a => (TipoAnimal)a.Tipo == TipoAnimal.Reptil).ToList();
 
             //Lo divido por 2 ya que supuse que el enunciado decia que el el mismo porcentaje para el total de hierba y carne.
             // En caso de ser el mismo porcentaje para cada tipo (carne hierba) en ese caso se multiplica el valor.

@@ -1,4 +1,6 @@
-﻿namespace CodeChallenge.Data.Model
+﻿using System.Threading.Tasks;
+
+namespace CodeChallenge.Data.Model
 {
     public class Animal
     {
@@ -10,5 +12,6 @@
         public double Porcentaje { get; set; }
         public double Kilos { get; set; }
         public int CambioPiel { get; set; }
+
     }
 }
