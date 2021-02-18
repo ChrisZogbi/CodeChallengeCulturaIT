@@ -11,7 +11,7 @@ namespace CodeChallengeTest
     {
         private ReptilServicio reptilServicio;
         private CarnivoroServicio carnivoroServicio;
-        private HerbiboroServicio herbiboroServicio;
+        private HerbivoroServicio herbivoroServicio;
         private ZoologicoServicio zoologicoServicio;
         private AnimalStorage animalStorage;
 
@@ -25,9 +25,9 @@ namespace CodeChallengeTest
         {
             reptilServicio = new ReptilServicio();
             carnivoroServicio = new CarnivoroServicio();
-            herbiboroServicio = new HerbiboroServicio();
+            herbivoroServicio = new HerbivoroServicio();
             animalStorage = new AnimalStorage();
-            zoologicoServicio = new ZoologicoServicio(carnivoroServicio, herbiboroServicio, reptilServicio);
+            zoologicoServicio = new ZoologicoServicio(carnivoroServicio, herbivoroServicio, reptilServicio);
 
         }
 
@@ -73,7 +73,7 @@ namespace CodeChallengeTest
                 Peso = 30,
                 Kilos = 10
             };
-            var result = herbiboroServicio.CalcularAlimento(herbiboro.Peso, herbiboro.Kilos);
+            var result = herbivoroServicio.CalcularAlimento(herbiboro.Peso, herbiboro.Kilos);
             Assert.AreEqual(result.Result, 70);
         }
 
@@ -88,14 +88,14 @@ namespace CodeChallengeTest
 
             int cantidadDias = 10; //Se puede cambiar el numero. El resultado se debe ajustar
 
-            var result = herbiboroServicio.CalcularAlimento(herbiboro.Peso, herbiboro.Kilos, cantidadDias);
+            var result = herbivoroServicio.CalcularAlimento(herbiboro.Peso, herbiboro.Kilos, cantidadDias);
             Assert.AreEqual(result.Result, 24000);
         }
 
         [Test]
         public void CalcularAlimentoHerbiborosMensual()
         {
-            var result = herbiboroServicio.CalcularAlimentoMensual(MockFactoryHerivboros());
+            var result = herbivoroServicio.CalcularAlimentoMensual(MockFactoryHerivboros());
             Assert.AreEqual(result.Result, 5180);
         }
 
@@ -155,12 +155,12 @@ namespace CodeChallengeTest
         {
             return new List<Animal>() {
                 new Animal{
-                    Tipo = (int)TipoAnimal.Herbiboro,
+                    Tipo = (int)TipoAnimal.Herbivoro,
                     Peso = 30,
                     Kilos = 10
                 },
                 new Animal{
-                    Tipo = (int)TipoAnimal.Herbiboro,
+                    Tipo = (int)TipoAnimal.Herbivoro,
                     Peso = 50,
                     Kilos = 15
                 }
@@ -199,12 +199,12 @@ namespace CodeChallengeTest
                     Porcentaje = 0.1
                 },//224
                 new Animal{
-                    Tipo = (int)TipoAnimal.Herbiboro,
+                    Tipo = (int)TipoAnimal.Herbivoro,
                     Peso = 30,
                     Kilos = 10
                 },//1960
                 new Animal{
-                    Tipo = (int)TipoAnimal.Herbiboro,
+                    Tipo = (int)TipoAnimal.Herbivoro,
                     Peso = 50,
                     Kilos = 15
                 },//3220
