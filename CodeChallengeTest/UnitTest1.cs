@@ -126,17 +126,6 @@ namespace CodeChallengeTest
             Assert.AreEqual(result.Result, 2540);
         }
 
-        [Test]
-        public void CalcularAlimentoTodosMensual()
-        {
-            //Cargo el storage
-            animalStorage.AgregarAnimales(MockFactoryTodos());
-
-            var result = zoologicoServicio.ProyectarConsumoTotalDelCorriente();
-
-            Assert.AreEqual(result.Result, 5639);
-        }
-
         #region Mock Factory
         private List<Animal> MockFactoryReptiles()
         {

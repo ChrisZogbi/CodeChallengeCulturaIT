@@ -14,23 +14,23 @@ namespace CodeChallenge.Data
             Animales = new List<Animal>();
         }
 
-        public async Task AgregarAnimal(Animal animal)
+        public Task AgregarAnimal(Animal animal)
         {
             Animales.Add(animal);
 
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
-        public async Task<List<Animal>> ObtenerAnimales()
+        public Task<List<Animal>> ObtenerAnimales()
         {
-            return await Task.FromResult(Animales);
+            return Task.FromResult(Animales);
         }
 
-        public async Task AgregarAnimales(List<Animal> animales)
+        public Task AgregarAnimales(List<Animal> animales)
         {
             Animales.AddRange(animales);
 
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
     }
 }
