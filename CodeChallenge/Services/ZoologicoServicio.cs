@@ -12,18 +12,18 @@ namespace CodeChallenge.Services
     public class ZoologicoServicio : IZoologicoServicio
     {
         private readonly ICarnivoroServicio _carnivoroServicio;
-        private readonly IHerbiboroServicio _herbiboroServicio;
+        private readonly IHerbivoroServicio _herbivoro;
         private readonly IReptilServicio _reptilServicio;
         private AnimalStorage _animalStorage;
 
-        public ZoologicoServicio(ICarnivoroServicio carnivoroServicio, IHerbiboroServicio herbiboroServicio, IReptilServicio reptilServicio)
+        public ZoologicoServicio(ICarnivoroServicio carnivoroServicio, IHerbivoroServicio herbiboroServicio, IReptilServicio reptilServicio)
         {
             _carnivoroServicio = carnivoroServicio;
-            _herbiboroServicio = herbiboroServicio;
+            _herbivoro = herbiboroServicio;
             _reptilServicio = reptilServicio;
             _animalStorage = new AnimalStorage();
         }
-        public List<TipoAnimal> TiposAnimales => new List<TipoAnimal>() { TipoAnimal.Carnivoro, TipoAnimal.Herbiboro, TipoAnimal.Reptil };
+        public List<TipoAnimal> TiposAnimales => new List<TipoAnimal>() { TipoAnimal.Carnivoro, TipoAnimal.Herbivoro, TipoAnimal.Reptil };
 
         public async Task AgregarAnimal(AnimalModel animalModel)
         {
@@ -39,8 +39,8 @@ namespace CodeChallenge.Services
                 case TipoAnimal.Carnivoro:
                     return await _carnivoroServicio.CalcularAlimento(animal.Peso, animal.Porcentaje, dias);
 
-                case TipoAnimal.Herbiboro:
-                    return await _herbiboroServicio.CalcularAlimento(animal.Peso, animal.Kilos, dias);
+                case TipoAnimal.Herbivoro:
+                    return await _herbivoro.CalcularAlimento(animal.Peso, animal.Kilos, dias);
 
                 case TipoAnimal.Reptil:
                     return await _reptilServicio.CalcularAlimento(animal.Peso, animal.Porcentaje, animal.CambioPiel, dias);
@@ -100,7 +100,7 @@ namespace CodeChallenge.Services
             List<Animal> animales = await _animalStorage.ObtenerAnimales();
 
             var carnivoros = animales.Where(a => (TipoAnimal)a.Tipo == TipoAnimal.Carnivoro).ToList();
-            var herbiboros = animales.Where(a => (TipoAnimal)a.Tipo == TipoAnimal.Herbiboro).ToList();
+            var herbiboros = animales.Where(a => (TipoAnimal)a.Tipo == TipoAnimal.Herbivoro).ToList();
             var reptiles = animales.Where(a => (TipoAnimal)a.Tipo == TipoAnimal.Reptil).ToList();
 
             //Lo divido por 2 ya que supuse que el enunciado decia que el el mismo porcentaje para el total de hierba y carne.
@@ -109,7 +109,7 @@ namespace CodeChallenge.Services
             double cantidadHierbaReptiles = await _reptilServicio.CalcularAlimentoMensual(reptiles) / 2;
 
             double cantidadCarneCarnivoros = await _carnivoroServicio.CalcularAlimentoMensual(carnivoros);
-            double cantidadHierbaHerbiboros = await _herbiboroServicio.CalcularAlimentoMensual(herbiboros);
+            double cantidadHierbaHerbiboros = await _herbivoro.CalcularAlimentoMensual(herbiboros);
 
             CantidadPorAlimento.Add(TipoAlimento.Carne.ToString(), (cantidadCarneCarnivoros + cantidadCarneReptiles).ToString());
             CantidadPorAlimento.Add(TipoAlimento.Hierba.ToString(), (cantidadHierbaHerbiboros + cantidadHierbaReptiles).ToString());

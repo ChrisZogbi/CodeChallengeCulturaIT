@@ -7,7 +7,7 @@ using CodeChallenge.Services.Model;
 
 namespace CodeChallenge.Services
 {
-    public class HerbiboroServicio : IHerbiboroServicio
+    public class HerbivoroServicio : IHerbivoroServicio
     {
         public async Task<double> CalcularAlimento(double peso, double kilos, int dias = 1)
         {
