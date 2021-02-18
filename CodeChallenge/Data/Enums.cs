@@ -4,7 +4,7 @@ namespace CodeChallenge.Data
     public enum TipoAnimal
     {
         Carnivoro,
-        Herbiboro,
+        Herbivoro,
         Reptil
     }
 

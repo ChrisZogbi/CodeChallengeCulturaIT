@@ -28,7 +28,7 @@ namespace CodeChallenge
             services
                 .AddSingleton<IZoologicoServicio, ZoologicoServicio>()
                 .AddSingleton<ICarnivoroServicio, CarnivoroServicio>()
-                .AddSingleton<IHerbiboroServicio, HerbiboroServicio>()
+                .AddSingleton<IHerbivoroServicio, HerbivoroServicio>()
                 .AddSingleton<IReptilServicio, ReptilServicio>();
 
             services.AddControllersWithViews()

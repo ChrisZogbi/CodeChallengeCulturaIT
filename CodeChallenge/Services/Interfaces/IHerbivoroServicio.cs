@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace CodeChallenge.Services.Interfaces
 {
-    public interface IHerbiboroServicio
+    public interface IHerbivoroServicio
     {
         Task<double> CalcularAlimento(double peso, double kilos, int dias = 1);
         Task<double> CalcularAlimentoMensual(List<Animal> herbiboros);
