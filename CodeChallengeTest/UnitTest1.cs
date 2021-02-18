@@ -177,7 +177,7 @@ namespace CodeChallengeTest
                     Porcentaje = 0.3
                 },
                 new Animal{
-                    Tipo = (int)TipoAnimal.Herbiboro,
+                    Tipo = (int)TipoAnimal.Herbivoro,
                     Peso = 1500,
                     Porcentaje = 0.5
                 }
