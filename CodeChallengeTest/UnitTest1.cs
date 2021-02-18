@@ -27,7 +27,7 @@ namespace CodeChallengeTest
             carnivoroServicio = new CarnivoroServicio();
             herbivoroServicio = new HerbivoroServicio();
             animalStorage = new AnimalStorage();
-            zoologicoServicio = new ZoologicoServicio(carnivoroServicio, herbivoroServicio, reptilServicio);
+            zoologicoServicio = new ZoologicoServicio(carnivoroServicio, herbivoroServicio, reptilServicio, animalStorage);
 
         }
 
@@ -124,6 +124,15 @@ namespace CodeChallengeTest
         {
             var result = reptilServicio.CalcularAlimentoMensual(MockFactoryReptiles());
             Assert.AreEqual(result.Result, 2540);
+        }
+
+        [Test]
+        public void CalcularAlimentoTodosMensual()
+        {
+            animalStorage.AgregarAnimales(MockFactoryTodos());
+
+            var result = zoologicoServicio.ProyectarConsumoTotalDelCorriente();
+            Assert.AreEqual(result.Result, 5639);
         }
 
         #region Mock Factory

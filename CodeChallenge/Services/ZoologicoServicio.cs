@@ -1,4 +1,5 @@
 ﻿using CodeChallenge.Data;
+using CodeChallenge.Data.Interfaces;
 using CodeChallenge.Data.Model;
 using CodeChallenge.Services.Interfaces;
 using CodeChallenge.Services.Model;
@@ -14,14 +15,14 @@ namespace CodeChallenge.Services
         private readonly ICarnivoroServicio _carnivoroServicio;
         private readonly IHerbivoroServicio _herbivoro;
         private readonly IReptilServicio _reptilServicio;
-        private AnimalStorage _animalStorage;
+        private readonly IAnimalStorage _animalStorage;
 
-        public ZoologicoServicio(ICarnivoroServicio carnivoroServicio, IHerbivoroServicio herbiboroServicio, IReptilServicio reptilServicio)
+        public ZoologicoServicio(ICarnivoroServicio carnivoroServicio, IHerbivoroServicio herbiboroServicio, IReptilServicio reptilServicio, IAnimalStorage animalStorage)
         {
             _carnivoroServicio = carnivoroServicio;
             _herbivoro = herbiboroServicio;
             _reptilServicio = reptilServicio;
-            _animalStorage = new AnimalStorage();
+            _animalStorage = animalStorage;
         }
         public List<TipoAnimal> TiposAnimales => new List<TipoAnimal>() { TipoAnimal.Carnivoro, TipoAnimal.Herbivoro, TipoAnimal.Reptil };
 

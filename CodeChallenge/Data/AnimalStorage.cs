@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CodeChallenge.Data.Interfaces;
 using CodeChallenge.Data.Model;
 
 namespace CodeChallenge.Data
 {
-    public class AnimalStorage
+    public class AnimalStorage : IAnimalStorage
     {
-        private List<Animal> Animales { get; set; }
-
-        public AnimalStorage()
-        {
-            Animales = new List<Animal>();
-        }
+        private List<Animal> Animales { get; set; } = new List<Animal>();
 
         public Task AgregarAnimal(Animal animal)
         {
