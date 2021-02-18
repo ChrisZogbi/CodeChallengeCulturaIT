@@ -16,12 +16,12 @@ namespace CodeChallenge.Services
         private readonly IReptilServicio _reptilServicio;
         private AnimalStorage _animalStorage;
 
-        public ZoologicoServicio(ICarnivoroServicio carnivoroServicio, IHerbiboroServicio herbiboroServicio, IReptilServicio reptilServicio, AnimalStorage animalStorage)
+        public ZoologicoServicio(ICarnivoroServicio carnivoroServicio, IHerbiboroServicio herbiboroServicio, IReptilServicio reptilServicio)
         {
             _carnivoroServicio = carnivoroServicio;
             _herbiboroServicio = herbiboroServicio;
             _reptilServicio = reptilServicio;
-            _animalStorage = animalStorage;
+            _animalStorage = new AnimalStorage();
         }
         public List<TipoAnimal> TiposAnimales => new List<TipoAnimal>() { TipoAnimal.Carnivoro, TipoAnimal.Herbiboro, TipoAnimal.Reptil };
 

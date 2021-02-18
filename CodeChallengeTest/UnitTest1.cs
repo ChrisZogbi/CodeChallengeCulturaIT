@@ -27,7 +27,7 @@ namespace CodeChallengeTest
             carnivoroServicio = new CarnivoroServicio();
             herbiboroServicio = new HerbiboroServicio();
             animalStorage = new AnimalStorage();
-            zoologicoServicio = new ZoologicoServicio(carnivoroServicio, herbiboroServicio, reptilServicio, animalStorage);
+            zoologicoServicio = new ZoologicoServicio(carnivoroServicio, herbiboroServicio, reptilServicio);
 
         }
 
